@@ -7,7 +7,7 @@ simulateBrowser 的使用方式如下。
 
 npm install simulate-browser
 
-下面這段程式，試範一個簡單的 command line 登入 Yahoo ，並取得  Cookie。
+下面這段程式，示範一個簡單的 command line 登入 Yahoo ，並取得  Cookie。
 
     var b = require('simulate-browser');
     var user = "xxx@yahoo.com.tw";
