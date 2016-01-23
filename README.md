@@ -1,15 +1,19 @@
 # simulateBrowser
 
-simulateBrowser 是一個 command line 專用的假瀏覽器
+simulateBrowser 是一個 command line 專用的假瀏覽器，能夠用來做網站測試或自動化功能，例如我可以寫一個自動登入 Facebook 網站並發送訊息給每一個朋友，或是自動登入 Yahoo 收信。
+
+simulateBrowser 的使用方式如下。
+
 
 npm install simulate-browser
 
 下面這段程式，試範一個簡單的 command line 登入 Yahoo ，並取得  Cookie。
 
     var b = require('simulate-browser');
-    // 連到 Yahoo Login 頁面
     var user = "xxx@yahoo.com.tw";
     var pswd = "1231123";
+    
+    // 連到 Yahoo Login 頁面
     b.get("https://login.yahoo.com/m?.intl=tw&.done=https://tw.mobi.yahoo.com")
         .then(function (text) {
             // 處理 Form 表單資料
