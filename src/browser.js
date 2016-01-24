@@ -7,21 +7,29 @@
 
 var http = require('light-http');
 var Q = require('q');
-
+var cManager = new (require('./cookieManager.js'));
+http.followLocation = false;
 
 function browser() {
     this.cookies = {};
     this.headers = {};
     this.html = "";
+    this.domain = "";
+    this.url = "";
 }
 
 var o = browser.prototype;
 o.headers = {};
 o.cookies = {};
 o.html = "";
-o.get = function (url, param, header) {
+o.domain = "";
+o.url = ""; // the url of browser
+
+o.get = function (url, param, header) 
+{//{{{
     var defer, self;
     self = this;
+    this.setUrlInfo(url);
     defer = Q.defer();
     if (typeof(header) === "undefined") {
         header = {};
@@ -35,16 +43,22 @@ o.get = function (url, param, header) {
             this.html = resp;
             headers = http.getResponseHeaders();
             if (headers['set-cookie']) {
-                self.handleCookie(headers['set-cookie']);
+                cManager.handleCookie(headers['set-cookie']);
             }
-            defer.resolve(resp);
+            if (headers['status-code'] === 301 || headers['status-code'] === 302) {
+                self.handleLocation(headers, defer);
+            } else {
+                defer.resolve(resp);
+            }
         });
     return defer.promise;
-};
+};//}}}
 
-o.post = function (url, param, header, file) {
+o.post = function (url, param, header, file) 
+{//{{{
     var defer, self;
     self = this;
+    this.setUrlInfo(url);
     defer = Q.defer();
     if (typeof(header) === "undefined") {
         header = {};
@@ -58,11 +72,34 @@ o.post = function (url, param, header, file) {
             this.html = resp;
             headers = http.getResponseHeaders();
             if (headers['set-cookie']) {
-                self.handleCookie(headers['set-cookie']);
+                cManager.handleCookie(headers['set-cookie']);
             }
             defer.resolve(resp);
         });
     return defer.promise;
+};//}}}
+
+o.handleLocation = function (headers, defer) 
+{//{{{
+    var url;
+    url = (headers.Location)? headers.Location: headers.location;
+    this.get(url)
+        .then(function (text) {
+             defer.resolve(text);
+        });
+
+}//}}}
+
+o.setUrlInfo = function (url) 
+{
+    var reg, mat;
+    this.url = url;
+    reg = /https?:\/\/([^\/]+)/;
+    mat = url.match(reg);
+    if (mat && mat[1]) {
+        this.domain = mat[1];
+        cManager.domain = mat[1];
+    }
 };
 
 o.setDefaultHeader = function (header) 
@@ -72,35 +109,6 @@ o.setDefaultHeader = function (header)
     }
     header['Accept'] = 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
 //    header['Accept-Encoding'] = "gzip, deflate, sdch";
-};//}}}
-
-/*
- * cookie format: key=value; expires=Fri, 22-Jan-2016 18:32:06 GMT; Max-Age=3600; path=/
- */
-o.handleCookie = function (resCookie) 
-{//{{{
-    var i, n, findPos, key, value, parts, partsN, name;
-    n = resCookie.length;
-    for (i = 0; i < n; i++) {
-        parts = resCookie[i].split(/;/);
-        partsN = parts.length;
-        for (j = 0; j < partsN; j++) {
-            str = parts[j].replace(/^[\s]+/, '');
-            findPos = str.indexOf("=");
-            if (findPos != -1) {
-                name = str.substring(0, findPos);
-                value = str.substring(findPos + 1, str.length);
-            } else {
-                continue;
-            }
-            if (j == 0) {
-                this.setCookie(name, "value", value);
-                key = name;
-            } else { 
-                this.setCookie(key, name, value);
-            }
-        }
-    }
 };//}}}
 
 o.setHeader = function (header) {
@@ -121,40 +129,19 @@ o.getHeader = function (key)
     return "";
 };//}}}
 
-o.getCookies = function () 
+o.getCookies = function (domain) 
 {//{{{
-    return this.cookies;
+    return cManager.getCookies(domain);
 };//}}}
 
 o.getCookie = function (key, hasDetail) 
 {//{{{
-    if (this.cookies[key]) {
-        if (typeof(hasDetail) != "undefined" && hasDetail === true) {
-            return this.cookies[key];
-        } else {
-            return this.cookies[key]['value'];
-        }
-    }
-
-    return "";
+    return cManager.getCookie(key, hasDetail);
 };//}}}
 
 o.getCookieString = function () 
 {
-    var key, str = [];
-    for (key in this.cookies) {
-        str.push(key + "="+this.cookies[key]['value']);
-    }
-    return str.join('; ');
-};
-
-o.setCookie = function (key, name, value) {
-    if (!this.cookies[key]) this.cookies[key] = {};
-    this.cookies[key][name] = value;
-};
-
-o.clearCookie = function (key, value) {
-    this.cookies = {};
+    return cManager.getCookieString();
 };
 
 module.exports = exports = browser;

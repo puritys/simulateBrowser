@@ -8,11 +8,14 @@ describe("Test get", function () {//{{{
     var resp1;
     before(function (done) {
         var url;
-        url = "http://localhost:8080/";
         url = "http://www.puritys.me/unit.php?unit=1";
         obj.get(url, {}, {})
+            .fail(function (err) {console.log(err);})
             .then(function (resp) {
-                return obj.get(url, {}, {});
+                return Q.promise(function (resolve, reject) {
+                    obj.get(url, {}, {})
+                        .then(function (text) {resolve(text)});
+                });
             })
             .then(function (resp) {
                 resp1 = JSON.parse(resp);
@@ -21,6 +24,7 @@ describe("Test get", function () {//{{{
     });
 
     it("Get html and set cookie", function () {
+        //console.log(obj.getCookies());
         assert.equal(1, resp1.unit);
         assert.equal('v2', obj.getCookie('b'));
         assert.equal('/', obj.getCookie('a', true).path);
@@ -77,4 +81,57 @@ describe("Test post", function () {//{{{
 
 });//}}}
 
+describe("Test location redirect", function () {//{{{
+    var resp;
+    before(function (done) {
+        var url;
+        url = baseUrl + "/unit.php?redirect=1";
+        obj.get(url, {}, {})
+            .then(function (text) {
+                resp = text;
+                done();
+            });
+    });
+    it("normal case", function () {
+        var c = obj.getCookies('www.puritys.me');
+        assert.equal("1", c.location.value);
+        assert.equal("doctype", resp.match(/doctype/)[0]);
+
+    });
+
+});//}}}
+
+describe("Test cookie", function () {//{{{
+    var resp, cookie1, cookie2;
+    before(function (done) {
+        var url;
+        url = baseUrl + "/unit.php?unit=1";
+        obj.get(url, {}, {})
+            .then(function (text) {
+                return Q.promise(function (resolve, reject) {
+                    cookie1 = obj.getCookies();
+                    obj.get("http://www.google.com.tw/")
+                        .then(function (tx) {
+                            cookie2 = obj.getCookies();
+                            resolve(tx);
+                        });
+                })
+            })
+            .then(function () {
+                done();
+            });
+    });
+    it("normal case", function () {
+        //console.log(cookie1);
+        assert.equal("v1", cookie1['a'].value);
+        //console.log(cookie2);
+        if (cookie2['NID']) {
+            assert.equal(true, true);
+        } else {
+            assert.equal(true, false, "can not get the cookie from the url of browser");
+        }
+
+    });
+
+});//}}}
 
