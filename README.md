@@ -1,6 +1,6 @@
 # simulateBrowser
 
-simulateBrowser 是一個 command line 專用的假瀏覽器，能夠用來做網站測試或自動化功能，例如我可以寫一個自動登入 Facebook 網站並發送訊息給每一個朋友，或是自動登入 Yahoo 收信。
+[[simulateBrowser] (https://www.npmjs.com/package/simulate-browser)] 是一個 command line 專用的假瀏覽器，能夠用來做網站測試或自動化功能，例如我可以寫一個自動登入 Facebook 網站並發送訊息給每一個朋友，或是自動登入 Yahoo 收信。
 
 simulateBrowser 的使用方式如下。
 
