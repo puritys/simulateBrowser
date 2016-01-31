@@ -43,3 +43,20 @@ npm install simulate-browser
             ret = b.getCookieString();
             console.log("cookie = " + ret);
         });
+
+
+Initialize cookie
+
+    var b = new (require('simulate-browser'));
+    // object    
+    b.setCookies({"userId": "xxx", "PHPSESSION": "zzzz"});
+    // string
+    b.setCookies("userId=xxx; PHPSESSION=zzzz");
+
+    b.get("https://tw.mobi.yahoo.com")
+        .then(function (xx) {
+
+        });
+
+
+
