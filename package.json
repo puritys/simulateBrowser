@@ -1,6 +1,6 @@
 {
   "name": "simulate-browser",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This library can simulate the http request actions of browser.",
   "main": "index.js",
   "directories": {
