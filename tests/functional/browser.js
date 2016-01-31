@@ -135,3 +135,15 @@ describe("Test cookie", function () {//{{{
 
 });//}}}
 
+describe("Test setCookies", function () {//{{{
+    it("normal case", function () {
+        var userId, age;
+        obj.setCookies("userId=1; age=13");
+        userId = obj.getCookie('userId');
+        age = obj.getCookie('age');
+        assert.equal(1, userId);
+        assert.equal(13, age);
+    });
+
+});//}}}
+
