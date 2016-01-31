@@ -58,13 +58,13 @@ o.getCookies = function (domain)
 
 
 o.getCookieString = function () 
-{
+{//{{{
     var key, str = [];
     for (key in this.cookies) {
         str.push(key + "="+this.cookies[key]['value']);
     }
     return str.join('; ');
-};
+};//}}}
 
 o.getCookie = function (key, hasDetail) 
 {//{{{
@@ -80,13 +80,39 @@ o.getCookie = function (key, hasDetail)
     return "";
 };//}}}
 
-
-o.setCookie = function (key, name, value) {
+o.setCookie = function (key, name, value, domain) 
+{//{{{
     var cookies;
-    cookies = this.getCookies();
+    if (typeof(domain) != "undefined") {
+        cookies = this.getCookies(domain);
+    } else {
+        cookies = this.getCookies();
+    }
     if (!cookies[key]) cookies[key] = {};
     cookies[key][name] = value;
-};
+};//}}}
+
+o.setCookies = function (str, domain) 
+{//{{{
+    var i, n, findPos, name, value, self;
+    self = this;
+    if (typeof(str) == "string") {
+        var s = str.split(/; /);
+        s.map(function (v, i) {
+            findPos = v.indexOf("=");
+            name = v.substring(0, findPos);
+            value = v.substring(findPos + 1, v.length);
+            self.setCookie(name, "value", value, domain);
+        });
+        for (var key in s) {
+            this.setCookie(str, "value", domain);
+        }
+    } else {
+        for (var key in str) {
+            this.setCookie(key, "value", str[key], domain);
+        }
+    }
+}//}}}
 
 o.clearCookie = function (key, value) {
     this.cookies = {};

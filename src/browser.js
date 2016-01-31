@@ -91,7 +91,7 @@ o.handleLocation = function (headers, defer)
 }//}}}
 
 o.setUrlInfo = function (url) 
-{
+{//{{{
     var reg, mat;
     this.url = url;
     reg = /https?:\/\/([^\/]+)/;
@@ -100,7 +100,7 @@ o.setUrlInfo = function (url)
         this.domain = mat[1];
         cManager.domain = mat[1];
     }
-};
+};//}}}
 
 o.setDefaultHeader = function (header) 
 {//{{{
@@ -128,6 +128,12 @@ o.getHeader = function (key)
     }
     return "";
 };//}}}
+
+o.setCookies = function (str, domain) 
+{//{{{
+    cManager.setCookies(str, domain);
+};//}}}
+
 
 o.getCookies = function (domain) 
 {//{{{
