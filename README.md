@@ -9,7 +9,7 @@ npm install simulate-browser
 
 下面這段程式，示範一個簡單的 command line 登入 Yahoo ，並取得  Cookie。
 
-    var b = new (require('simulate-browser'));
+    var b = require('simulate-browser');
     var user = "xxx@yahoo.com.tw";
     var pswd = "1231123";
     
@@ -47,7 +47,7 @@ npm install simulate-browser
 
 Initialize cookie
 
-    var b = new (require('simulate-browser'));
+    var b = require('simulate-browser');
     // object    
     b.setCookies({"userId": "xxx", "PHPSESSION": "zzzz"});
     // string

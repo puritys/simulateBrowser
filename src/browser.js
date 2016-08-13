@@ -150,4 +150,5 @@ o.getCookieString = function ()
     return cManager.getCookieString();
 };
 
-module.exports = exports = browser;
+module.exports = new browser();
+module.exports.constructor = browser;
