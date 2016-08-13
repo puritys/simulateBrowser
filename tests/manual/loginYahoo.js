@@ -1,6 +1,6 @@
 var Q = require('q');
 var prompt = require('prompt');
-var b = new (require('./../../index.js'));
+var b = require('./../../index.js');
 var user = "xxxxxx@yahoo.com.tw";
 var pswd = "";
 

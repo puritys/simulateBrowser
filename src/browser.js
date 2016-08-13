@@ -107,7 +107,7 @@ o.setDefaultHeader = function (header)
     if (!header['user-agent']) {
         header['user-agent']  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10) AppleWebKit/517.36 (KHTML, like Gecko) Chrome/48.0.2125.104 Safari/597.16";
     }
-    header['Accept'] = 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+    header['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
 //    header['Accept-Encoding'] = "gzip, deflate, sdch";
 };//}}}
 

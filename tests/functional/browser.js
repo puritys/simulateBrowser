@@ -1,7 +1,6 @@
 var assert = require('assert');
-var browser = require('./../../src/browser.js');
+var obj = require('./../../src/browser.js');
 var Q = require('q');
-var obj = new browser();
 var baseUrl = "http://www.puritys.me";
 
 describe("Test get", function () {//{{{
