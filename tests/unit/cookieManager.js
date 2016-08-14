@@ -12,6 +12,15 @@ describe("Test setCookies", function () {//{{{
 
     });
 
+    it("handle cookie", function () {
+        var ret;
+        obj.clearCookie();
+        obj.handleCookie(['JSESSIONID=zzz; Path=/aso']);
+        ret = obj.getCookieString();
+        assert.equal("JSESSIONID=zzz", ret);
+    });
+
+
 
     it("object cookie", function () {
         var ret;

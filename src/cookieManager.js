@@ -1,6 +1,6 @@
 function cookieManager() 
 {
-    this.domain = "";
+    this.domain = "default";
     this.domainsInfo = {
 
     }; 
@@ -11,6 +11,14 @@ o.domain = "";
 o.domainsInfo = {
     "default": {
         "cookies": {}
+    }
+};
+
+o.processHeaderCookie = function (headers) {
+    if (headers['set-cookie']) {
+        this.handleCookie(headers['set-cookie']);
+    } else if (headers['Set-Cookie']) {
+        this.handleCookie(headers['Set-Cookie']);
     }
 };
 
@@ -57,11 +65,12 @@ o.getCookies = function (domain)
 };//}}}
 
 
-o.getCookieString = function () 
+o.getCookieString = function (domain) 
 {//{{{
     var key, str = [];
-    for (key in this.cookies) {
-        str.push(key + "="+this.cookies[key]['value']);
+    var cookies = this.getCookies(domain);
+    for (key in cookies) {
+        str.push(key + "="+cookies[key]['value']);
     }
     return str.join('; ');
 };//}}}
@@ -114,8 +123,11 @@ o.setCookies = function (str, domain)
     }
 }//}}}
 
-o.clearCookie = function (key, value) {
-    this.cookies = {};
+o.clearCookie = function (domain) {
+    if (!domain) domain = this.domain;
+    if (this.domainsInfo[domain]) {
+        this.domainsInfo[domain].cookies = {};
+    }
 };
 
 
