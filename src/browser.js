@@ -117,13 +117,14 @@ o.handleLocation = function (headers, defer)
 
 o.setUrlInfo = function (url) 
 {//{{{
-    var reg, mat;
+    var reg, mat, domain;
     this.url = url;
     reg = /https?:\/\/([^\/]+)/;
     mat = url.match(reg);
     if (mat && mat[1]) {
-        this.domain = mat[1];
-        cManager.domain = mat[1];
+        domain = _.last(mat[1].split(/\./), 2).join(".");
+        this.domain = domain;
+        cManager.domain = domain;
     }
 };//}}}
 
