@@ -1,7 +1,7 @@
 var assert = require('assert');
 var obj = require('./../../src/browser.js');
 var Q = require('q');
-var baseUrl = "http://www.puritys.me";
+var baseUrl = "https://www.puritys.me";
 
 describe("Test get", function () {//{{{
     var resp1;
@@ -92,9 +92,8 @@ describe("Test location redirect", function () {//{{{
             });
     });
     it("normal case", function () {
-        var c = obj.getCookies('www.puritys.me');
-        assert.equal("1", c.location.value);
-        assert.equal("doctype", resp.match(/doctype/)[0]);
+        var c = obj.baseUrl;
+        assert.equal("https://www.google.com.tw", c);
 
     });
 

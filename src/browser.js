@@ -11,12 +11,13 @@ var _ = require('underscore');
 
 var cManager = new (require('./cookieManager.js'));
 var defaultHeader = {
-       "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10) AppleWebKit/517.36 (KHTML, like Gecko) Chrome/48.0.2125.104 Safari/597.16"
+       "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
 };
 
 http.followLocation = false;
 
 function browser() {
+    this.baseUrl = "";
     this.cookies = {};
     this.headers = {};
     this.html = "";
@@ -38,7 +39,7 @@ o.getResponseDetail = function () {
     return _.clone(this.responseDetail);
 };
 
-o.get = function (url, param, header) 
+o.get = function (url, param, header)
 {//{{{
     var defer, self;
     self = this;
@@ -51,11 +52,13 @@ o.get = function (url, param, header)
     this.setDefaultHeader(header);
     header['Cookie'] = this.getCookieString();
     http.disableSslVerification();
+
     http.get(url, param, header)
     .then(function (resp) {
         var headers;
         self.html = resp;
         self.responseHeaders = headers = http.getResponseHeaders();
+        self.baseUrl = self.getBaseUrl(url);
         cManager.processHeaderCookie(headers);
         if (self.isRedirect.yes() && 
             (headers['status-code'] === 301 || headers['status-code'] === 302)
@@ -104,16 +107,28 @@ o.post = function (url, param, header, file)
     return defer.promise;
 };//}}}
 
-o.handleLocation = function (headers, defer) 
+o.handleLocation = function (headers, defer)
 {//{{{
     var url;
     url = (headers.Location)? headers.Location: headers.location;
+    if (url.substring(0, 1) == "/") {
+        url = this.baseUrl + url;
+    }
+    //console.log("location url = " + url);
     this.get(url)
         .then(function (text) {
              defer.resolve(text);
         });
 
 }//}}}
+
+o.getBaseUrl = function (url) {
+    var res = url.match(/https?:\/\/[^\/]+/);
+    if (!res || !res[0]) {
+        this.throwException("failed to getBaseUrl, url is " + url);
+    }
+    return res[0];
+};
 
 o.setUrlInfo = function (url) 
 {//{{{
@@ -198,6 +213,11 @@ o.disableAutoRedirect = function (forever) {
 
 o.enableAutoRedirect = function () {
     this.isRedirect.enaable();
+};
+
+o.throwException = function (msg) {
+    console.error(msg);
+    throw new Exception(msg);
 };
 
 module.exports = new browser();
