@@ -20,9 +20,10 @@ npm install simulate-browser
             var params, _crumb, reg, mat, inputs;
             params = {
                 username: user,
-                passwd: pswd,
-                ".format": "json"
+                signin: "authtype",
+                "countrycode": 886
             };
+
             inputs = ["_ts", "_tps", "_muh", "_crumb", "_uuid", "_seqid", "otp_channel", "otp_ref_cc_intl"];
             for (var k in inputs) {
                 reg = new RegExp('<input type="hidden" name="'+inputs[k]+'" value="([^\"]+)"');
@@ -32,7 +33,33 @@ npm install simulate-browser
             }
             // 送出 Form 表單
             return b.post("https://login.yahoo.com/m?.intl=tw&.done=https%3A%2F%2Ftw.mobi.yahoo.com", params);
-        })
+        }).fail(error)
+        .then(function (text) {
+            //var header = b.getResponseHeaders();
+            //console.log("Firt step header = ", header , "\n\n");
+            console.log(text);
+            var nextUrl = "https://login.yahoo.com/account/challenge/password";
+            var params, _crumb, reg, mat, inputs;
+            params = {
+                username: user,
+                signin: "authtype",
+                password: pswd,
+                _ts: ts,
+                verifyPassword: "登入",
+                passwordContext: "yakEligible"
+
+            };
+
+            inputs = ["_ts", "_tps", "acrumb", "crumb", "config", "s"];
+            for (var k in inputs) {
+                reg = new RegExp('<input type="hidden" name="'+inputs[k]+'" value="([^\"]+)"');
+                mat = text.match(reg);
+                if (mat && mat[1]) params[inputs[k]] = mat[1];
+
+            }
+            console.log("Password page, Your input:", params);
+            return b.post(nextUrl, params);
+        }).fail(error)
         .then(function (text) {
             // 連到 My Yahoo 頁面
             return b.get("https://my.yahoo.com/");
